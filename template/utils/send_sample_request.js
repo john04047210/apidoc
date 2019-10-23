@@ -33,7 +33,6 @@ define([
 
       // Optional header
       var header = {};
-      let contentType = 'application/json; charset=UTF-8';
       $root.find(".sample-request-header:checked").each(function(i, element) {
           var group = $(element).data("sample-request-header-group-id");
           $root.find("[data-sample-request-header-group=\"" + group + "\"]").each(function(i, element) {
@@ -42,11 +41,7 @@ define([
             if ( ! element.optional && element.defaultValue !== '') {
                 value = element.defaultValue;
             }
-            if (key == 'Content-Type') {
-                contentType = value;
-            } else {
-            	  header[key] = value;
-            }
+            header[key] = value;
           });
       });
 
@@ -58,13 +53,29 @@ define([
           $root.find("[data-sample-request-param-group=\"" + group + "\"]").not(function(){
             return $(this).val() == "" && $(this).is("[data-sample-request-param-optional='true']");
           }).each(function(i, element) {
-            var key = $(element).data("sample-request-param-name");
-            var value = element.value;
-            if ( ! element.optional && element.defaultValue !== '') {
-                value = element.defaultValue;
-            }
-            param[key] = value;
-            paramType[key] = $(element).next().text();
+              var key = $(element).data("sample-request-param-name");
+              var value = element.value;
+              if ( ! element.optional && element.defaultValue !== '') {
+                  value = element.defaultValue;
+              }
+              let element_type = $(element).next().text().toLowerCase();
+              if ('object' == element_type) {
+                  param[key] = {};
+              } else {
+            	    _gr = key.split('.');
+              	  if (_gr.length == 1) {
+                      param[key] = value;
+                      paramType[key] = element_type;
+                  } else {
+                      if (!param.hasOwnProperty(_gr[0])) {
+                        	param[_gr[0]] = {};
+                      }
+                    	_param = param[_gr[0]];
+                      if (_gr.length == 2) {
+                        	_param[_gr[1]] = value;
+                      }
+                  }
+              }
           });
       });
 
@@ -88,7 +99,7 @@ define([
       $root.find(".sample-request-response-json").html("Loading...");
       refreshScrollSpy();
 
-      if (typeof header['Content-Type'] != 'undefined' && header['Content-Type'] == 'application/json') {
+      if (typeof header['Content-Type'] != 'undefined' && header['Content-Type'].startsWith('application/json')) {
           param = JSON.stringify(param)
       }
       else {
@@ -101,10 +112,6 @@ define([
                   }
               }
           });
-      }
-    
-      if (contentType.startsWith('application/json')) {
-      	  param = JSON.stringify(param);
       }
     
       // send AJAX request, catch success or error callback
