@@ -33,6 +33,7 @@ define([
 
       // Optional header
       var header = {};
+      let contentType = 'application/json; charset=UTF-8';
       $root.find(".sample-request-header:checked").each(function(i, element) {
           var group = $(element).data("sample-request-header-group-id");
           $root.find("[data-sample-request-header-group=\"" + group + "\"]").each(function(i, element) {
@@ -41,7 +42,11 @@ define([
             if ( ! element.optional && element.defaultValue !== '') {
                 value = element.defaultValue;
             }
-            header[key] = value;
+            if (key == 'Content-Type') {
+                contentType = value;
+            } else {
+            	  header[key] = value;
+            }
           });
       });
 
@@ -97,12 +102,18 @@ define([
               }
           });
       }
+    
+      if (contentType.startsWith('application/json')) {
+      	  param = JSON.stringify(param);
+      }
+    
       // send AJAX request, catch success or error callback
       var ajaxRequest = {
+          method     : type.toUpperCase(),
           url        : url,
           headers    : header,
+          contentType: contentType,
           data       : param,
-          type       : type.toUpperCase(),
           success    : displaySuccess,
           error      : displayError
       };
