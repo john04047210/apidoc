@@ -276,7 +276,7 @@
               {{#each this}}
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="sample-request-param-field-{{field}}">{{field}}</label>
-                    <div class="input-group">
+                    <div class="input-group form-group">
                       <input id="sample-request-param-field-{{field}}" type="text" placeholder="{{field}}" class="form-control sample-request-param" data-sample-request-param-name="{{field}}" data-sample-request-param-group="sample-request-param-{{@../index}}" {{#if optional}}data-sample-request-param-optional="true"{{/if}}>
                       <div class="input-group-addon">{{{type}}}</div>
                     </div>
