@@ -15,6 +15,7 @@ Documentation: [apidocjs.com](http://apidocjs.com)
 
 ```bash
 $ npm install -g apidoc
+  npm install -g git+https://github.com/john04047210/apidoc.git
 ```
 
 ## Usage
